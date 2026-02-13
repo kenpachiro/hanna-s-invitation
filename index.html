@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Baby ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --wine-red: #722f37;
+            --cream: #f8f0e3;
+            --bright-red: #d32f2f; /* Standard red for the No button */
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background-color: white; /* Starts White */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; 
+            text-align: center;
+            transition: background-color 1.5s ease; /* Smooth transition to red */
+        }
+
+        /* The Shake Animation for "No" clicks */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+            75% { transform: translateX(-8px); }
+            100% { transform: translateX(0); }
+        }
+
+        .shake-effect {
+            animation: shake 0.3s ease-in-out;
+        }
+
+        .container {
+            position: relative;
+            width: 90%;
+            max-width: 500px;
+            z-index: 10;
+        }
+
+        h1 {
+            color: var(--wine-red); /* Text starts red */
+            font-size: 2rem;
+            margin-bottom: 25px;
+            transition: color 1s ease;
+        }
+
+        .gif-container img {
+            width: 100%;
+            max-width: 250px;
+            border-radius: 20px;
+            border: 4px solid var(--wine-red);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: all 1s ease;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: none;
+        }
+
+        #yesBtn {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 999;
+            background-color: #4caf50; /* Green for Yes */
+            color: white;
+        }
+
+        /* RED NO BUTTON WITH WHITE TEXT */
+        #noBtn {
+            position: relative;
+            background-color: var(--bright-red);
+            color: white;
+            transition: transform 0.2s ease;
+        }
+
+        /* Success State styles */
+        body.accepted {
+            background-color: var(--wine-red);
+        }
+
+        body.accepted h1 {
+            color: var(--cream);
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+
+        body.accepted .gif-container img {
+            border-color: var(--cream);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body id="body">
+
+    <div class="container" id="mainContainer">
+        <div class="gif-container">
+            <img id="mainImage" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnN1djAybjNsZXdhcTF3aDg5Z2NjZmpnN25qYzVrOXlreTVwMGFoaSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/NBs1mJNW8qCPrsauIN/giphy.gif" alt="Asking GIF">
+        </div>
+
+        <h1 id="question">Will you be my Valentine?</h1>
+
+        <div class="buttons">
+            <button id="yesBtn" onclick="handleYes()">Yes Baby!</button>
+            <button id="noBtn" onclick="handleNo()">No</button>
+        </div>
+    </div>
+
+    <script>
+        let noClickCount = 0;
+        const noButton = document.getElementById('noBtn');
+        const yesButton = document.getElementById('yesBtn');
+        const container = document.getElementById('mainContainer');
+        const body = document.getElementById('body');
+        const questionText = document.getElementById('question');
+        const mainImage = document.getElementById('mainImage');
+
+        const phrases = [
+            "No",
+            "Nauuuuur, bakit ka nag no :((",
+            "NAAAAUUUR, KASAKIT NAMAN BABY",
+            "Are you sure naba talaga baby? :(((("
+        ];
+
+        const gifs = [
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcnN1djAybjNsZXdhcTF3aDg5Z2NjZmpnN25qYzVrOXlreTVwMGFoaSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/NBs1mJNW8qCPrsauIN/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNm43N21xeGxjZzBhcmUxOGJuZ2Z6ZHM0cWtrYnVzZGZkYjkyOWozYSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/OzlmyoTC2n3aOTXGFi/giphy.gif",
+            "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWptaGs4aGNnNHZ2dXlpdmR3cHJzd2dqeWt0ejVudGp2MXdlOHhqeCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/fdiOoSR8omN5RO36Yo/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExejRuZW9wcmI4OWc1MHF6cGwzOGg2cmxiNW1lbWdjZHpzNzZxMWUwMyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/ruyS8Zw9sBqE5UjOnY/giphy.gif"
+        ];
+
+        const successGif = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb3ltOWp3cHZxOGozbnZlMGc3YTNjOGoweWt5ankwbW85Z2l3YTF0aiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/T70hpBP1L0N7U0jtkq/giphy.gif";
+
+        function handleNo() {
+            noClickCount++;
+            
+            // 1. Shake the screen
+            container.classList.add('shake-effect');
+            setTimeout(() => container.classList.remove('shake-effect'), 300);
+
+            // 2. Move the No button slightly to be playful
+            const x = Math.random() * 30 - 15;
+            const y = Math.random() * 30 - 15;
+            noButton.style.transform = `translate(${x}px, ${y}px)`;
+
+            // 3. Text and GIF logic
+            if (noClickCount < phrases.length) {
+                noButton.innerText = phrases[noClickCount];
+                mainImage.src = gifs[noClickCount];
+            } else {
+                noButton.innerText = "Sige na baby... 🥺";
+            }
+
+            // 4. Yes Button Grows
+            const currentSize = parseFloat(window.getComputedStyle(yesButton).fontSize);
+            const newSize = currentSize * 1.5; 
+            yesButton.style.fontSize = newSize + "px";
+            yesButton.style.padding = (newSize * 0.7) + "px " + (newSize * 1.2) + "px";
+        }
+
+        function handleYes() {
+            body.classList.add('accepted');
+            
+            var end = Date.now() + (5 * 1000);
+            var colors = ['#ffffff', '#ff0000', '#f8f0e3'];
+
+            (function frame() {
+              confetti({
+                particleCount: 3,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: colors
+              });
+              confetti({
+                particleCount: 3,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: colors
+              });
+
+              if (Date.now() < end) {
+                requestAnimationFrame(frame);
+              }
+            }());
+
+            mainImage.src = successGif;
+            questionText.innerText = "YEEEY! I LOVE YOUU    U BAAABYY! SEE YOUUU!❤️";
+            questionText.style.fontSize = "2.8rem";
+            document.querySelector('.buttons').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
