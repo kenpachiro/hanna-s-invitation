@@ -9,12 +9,12 @@
         :root {
             --wine-red: #722f37;
             --cream: #f8f0e3;
-            --bright-red: #d32f2f; /* Standard red for the No button */
+            --bright-red: #d32f2f;
         }
 
         body {
             font-family: 'Georgia', serif;
-            background-color: white; /* Starts White */
+            background-color: white;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -22,10 +22,9 @@
             margin: 0;
             overflow: hidden; 
             text-align: center;
-            transition: background-color 1.5s ease; /* Smooth transition to red */
+            transition: background-color 1.5s ease;
         }
 
-        /* The Shake Animation for "No" clicks */
         @keyframes shake {
             0% { transform: translateX(0); }
             25% { transform: translateX(-8px); }
@@ -46,7 +45,7 @@
         }
 
         h1 {
-            color: var(--wine-red); /* Text starts red */
+            color: var(--wine-red);
             font-size: 2rem;
             margin-bottom: 25px;
             transition: color 1s ease;
@@ -55,46 +54,47 @@
         .gif-container img {
             width: 100%;
             max-width: 250px;
-            border-radius: 20px;
+            border-radius: 12px; /* Slightly squared corners for the image */
             border: 4px solid var(--wine-red);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             transition: all 1s ease;
         }
 
+        /* CHANGED: Flex-direction set to column so buttons stack */
         .buttons {
             display: flex;
+            flex-direction: column; 
             justify-content: center;
             align-items: center;
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 25px;
         }
 
         button {
-            padding: 12px 25px;
+            padding: 15px 30px;
             font-size: 1.1rem;
-            border-radius: 50px;
+            border-radius: 8px; /* CHANGED: Square type corners */
             cursor: pointer;
             font-weight: bold;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             border: none;
+            width: auto;
+            min-width: 150px; /* Ensures a consistent base size */
         }
 
         #yesBtn {
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 999;
-            background-color: #4caf50; /* Green for Yes */
+            background-color: #4caf50;
             color: white;
         }
 
-        /* RED NO BUTTON WITH WHITE TEXT */
         #noBtn {
-            position: relative;
             background-color: var(--bright-red);
             color: white;
             transition: transform 0.2s ease;
         }
 
-        /* Success State styles */
         body.accepted {
             background-color: var(--wine-red);
         }
@@ -153,16 +153,14 @@
         function handleNo() {
             noClickCount++;
             
-            // 1. Shake the screen
             container.classList.add('shake-effect');
             setTimeout(() => container.classList.remove('shake-effect'), 300);
 
-            // 2. Move the No button slightly to be playful
-            const x = Math.random() * 30 - 15;
-            const y = Math.random() * 30 - 15;
+            // Playful jitter
+            const x = Math.random() * 20 - 10;
+            const y = Math.random() * 20 - 10;
             noButton.style.transform = `translate(${x}px, ${y}px)`;
 
-            // 3. Text and GIF logic
             if (noClickCount < phrases.length) {
                 noButton.innerText = phrases[noClickCount];
                 mainImage.src = gifs[noClickCount];
@@ -170,11 +168,11 @@
                 noButton.innerText = "Sige na baby... 🥺";
             }
 
-            // 4. Yes Button Grows
+            // Yes Button Grows
             const currentSize = parseFloat(window.getComputedStyle(yesButton).fontSize);
-            const newSize = currentSize * 1.5; 
+            const newSize = currentSize * 1.35; // Slightly adjusted multiplier for vertical layout
             yesButton.style.fontSize = newSize + "px";
-            yesButton.style.padding = (newSize * 0.7) + "px " + (newSize * 1.2) + "px";
+            yesButton.style.padding = (newSize * 0.6) + "px " + (newSize * 1.1) + "px";
         }
 
         function handleYes() {
@@ -205,7 +203,7 @@
             }());
 
             mainImage.src = successGif;
-            questionText.innerText = "YEEEY! I LOVE YOUU    U BAAABYY! SEE YOUUU!❤️";
+            questionText.innerText = "YEEEY! I LOVE YOUU U BAAABYY! SEE YOUUU!❤️";
             questionText.style.fontSize = "2.8rem";
             document.querySelector('.buttons').style.display = 'none';
         }
